@@ -6,12 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "npx eslint .",
-    "dev": "nodemon app.js"
+    "dev": "nodemon --no-deprecation app.js"
   },
   "author": "Jack Malzone",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "mongoose": "^6.6.1",
+    "validator": "^13.12.0"
   },
   "devDependencies": {
     "eslint": "^8.57.1",
