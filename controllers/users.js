@@ -19,15 +19,8 @@ const createUser = (req, res) => {
     });
   }
 
-  return User.findOne({ email })
-    .then((existingUser) => {
-      if (existingUser) {
-        throw new Error("EmailExists");
-      }
-
-      // Hash the password
-      return bcrypt.hash(password, 10);
-    })
+  return bcrypt
+    .hash(password, 10)
     .then((hash) =>
       User.create({
         name,
@@ -43,11 +36,7 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      if (err.message === "EmailExists") {
-        res.status(CONFLICT).send({
-          message: "Email already exists",
-        });
-      } else if (err.name === "ValidationError") {
+      if (err.name === "ValidationError") {
         res.status(BAD_REQUEST).send({
           message: "Invalid user data",
           errors: Object.values(err.errors).map((error) => error.message),
