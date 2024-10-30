@@ -20,9 +20,16 @@ const getItems = (req, res) => {
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
+
+  if (!name || !weather || !imageUrl) {
+    return res.status(BAD_REQUEST).send({
+      message: "Missing required fields",
+    });
+  }
+
   const owner = req.user._id;
 
-  ClothingItem.create({ name, weather, imageUrl, owner })
+  return ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send(item))
     .catch((err) => {
       console.error(err);

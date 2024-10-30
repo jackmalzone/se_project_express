@@ -6,6 +6,7 @@ const {
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
   CONFLICT,
+  UNAUTHORIZED,
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
@@ -45,8 +46,13 @@ const getUser = (req, res) => {
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
-  // First check if user exists
-  User.findOne({ email })
+  if (!name || !avatar || !email || !password) {
+    return res.status(BAD_REQUEST).send({
+      message: "Missing required fields",
+    });
+  }
+
+  return User.findOne({ email })
     .then((existingUser) => {
       if (existingUser) {
         throw new Error("EmailExists");
@@ -64,7 +70,6 @@ const createUser = (req, res) => {
       })
     )
     .then((user) => {
-      // Remove password from response
       const userResponse = user.toObject();
       delete userResponse.password;
       res.status(201).send(userResponse);
@@ -95,6 +100,12 @@ const createUser = (req, res) => {
 const login = (req, res) => {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    return res.status(BAD_REQUEST).send({
+      message: "Email and password are required",
+    });
+  }
+
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
@@ -104,7 +115,7 @@ const login = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res.status(401).send({ message: "Incorrect email or password" });
+      res.status(UNAUTHORIZED).send({ message: "Incorrect email or password" });
     });
 };
 
