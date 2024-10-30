@@ -39,7 +39,6 @@ const createUser = (req, res) => {
       if (err.name === "ValidationError") {
         res.status(BAD_REQUEST).send({
           message: "Invalid user data",
-          errors: Object.values(err.errors).map((error) => error.message),
         });
       } else if (err.code === 11000) {
         res.status(CONFLICT).send({
@@ -116,7 +115,6 @@ const updateCurrentUser = (req, res) => {
       if (err.name === "ValidationError") {
         res.status(BAD_REQUEST).send({
           message: "Invalid user data",
-          errors: Object.values(err.errors).map((error) => error.message),
         });
       } else if (err.statusCode === NOT_FOUND) {
         res.status(NOT_FOUND).send({ message: err.message });
