@@ -2,10 +2,14 @@ const router = require("express").Router();
 const userRouter = require("./users");
 const itemRouter = require("./items");
 const { login, createUser } = require("../controllers/users");
+const {
+  validateUserBody,
+  validateAuthentication,
+} = require("../middlewares/validation");
 const { NOT_FOUND } = require("../utils/errors");
 
-router.post("/signin", login);
-router.post("/signup", createUser);
+router.post("/signin", validateAuthentication, login);
+router.post("/signup", validateUserBody, createUser);
 
 router.use("/users", userRouter);
 router.use("/items", itemRouter);

@@ -1197,3 +1197,267 @@ Add error-handling middleware to your WTWR application.
 Implement custom error constructors and update your controllers to use them.
 Ensure your app gracefully handles known and unknown errors.
 With centralized error handling, your application will become more stable, easier to debug, and ready for scalable development. 🚀
+
+Validating Inbound Server Data: Overview
+Data validation is an essential step to secure and stabilize your application. By validating requests before reaching the controller, you can:
+Protect your app from malicious attacks.
+Avoid unnecessary resource consumption.
+Ensure data integrity.
+This lesson introduced tools like Joi and Celebrate for effective validation.
+
+Key Concepts
+Why Validate Requests at the Middleware Level?
+Efficiency: Prevents invalid requests from reaching the controller, saving CPU-intensive operations (e.g., password hashing).
+Security: Shields the application from malicious payloads, such as invalid or excessive data.
+Stability: Ensures that controllers only process valid, expected input, reducing runtime errors.
+
+Tools for Validation
+1. Joi
+A popular library for defining schemas and validating data.
+Define schemas with clear, intuitive rules:
+javascript
+Copy code
+Joi.object().keys({
+  email: Joi.string().required().email(),
+  password: Joi.string().required().min(8),
+  name: Joi.string().required().min(2).max(30),
+});
+
+
+Example rules:
+Joi.string().required() — A required string.
+Joi.number().integer().min(18) — An integer, minimum value of 18.
+Joi.string().email() — A string that matches the email pattern.
+2. Celebrate
+Middleware that integrates Joi validation into your application routes.
+Usage example:
+javascript
+Copy code
+const { celebrate, Joi } = require('celebrate');
+
+router.post('/posts', celebrate({
+  body: Joi.object().keys({
+    title: Joi.string().required().min(2).max(30),
+    text: Joi.string().required().min(2),
+  }),
+}), createPost);
+
+
+Validates incoming req.body, req.params, req.headers, or req.query.
+
+Celebrate Features
+Request Validation
+Celebrate validates various parts of the request:
+Body:
+javascript
+Copy code
+body: Joi.object().keys({ key: Joi.string().required() });
+
+
+Params:
+javascript
+Copy code
+params: Joi.object().keys({ id: Joi.string().alphanum().length(24) });
+
+
+Headers:
+javascript
+Copy code
+headers: Joi.object().keys({}).unknown(true); // Allows unlisted headers
+
+
+Query:
+javascript
+Copy code
+query: Joi.object().keys({ key: Joi.number().integer() });
+
+
+Custom Error Handling
+Celebrate passes validation errors to its own errors() middleware:
+javascript
+Copy code
+const { errors } = require('celebrate');
+app.use(errors()); // Handles Joi validation errors
+
+Example error response:
+json
+Copy code
+{
+  "statusCode": 400,
+  "error": "Bad Request",
+  "message": "child \"name\" fails because [\"name\" is required]",
+  "validation": {
+    "source": "body",
+    "keys": ["name"]
+  }
+}
+
+Status Code: 400 Bad Request.
+Message: Details the invalid field(s) and reason.
+Allow Unknown Fields
+By default, Joi rejects fields not listed in the schema. Use unknown(true) to allow them:
+javascript
+Copy code
+headers: Joi.object().unknown(true),
+
+
+Steps for Implementation
+1. Install Celebrate
+Install the required packages:
+bash
+Copy code
+npm install celebrate joi
+
+2. Add Celebrate Validation to Routes
+Use the celebrate middleware to validate requests:
+javascript
+Copy code
+const { celebrate, Joi } = require('celebrate');
+
+router.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+    name: Joi.string().required().min(2).max(30),
+  }),
+}), signupController);
+
+3. Handle Celebrate Errors
+Add the errors() middleware before your centralized error handler:
+javascript
+Copy code
+const { errors } = require('celebrate');
+
+app.use(errors()); // Celebrate error handler
+app.use((err, req, res, next) => {
+  // Centralized error handler
+});
+
+
+Key Takeaways
+Pre-Validation:
+Validate incoming requests at the middleware level to block invalid data early.
+Schema Definition:
+Use Joi schemas to clearly define expected request formats.
+Comprehensive Validation:
+Validate body, params, headers, and query for complete request validation.
+Error Handling:
+Celebrate passes validation errors to its errors() middleware.
+Use centralized error handling for all other errors.
+
+Next Steps
+In the next lesson, you’ll apply these techniques to the WTWR project:
+Install and configure Celebrate.
+Add validation middleware to your routes.
+Handle validation errors effectively. 🚀
+
+Logging Overview
+Logging is an essential component of server-side applications, providing insights into what happens during requests and when errors occur. By recording key events and errors, logs allow you to identify and troubleshoot issues, improve performance, and enhance user satisfaction.
+
+Why Logging Matters
+Troubleshooting: Logs help developers understand why an error occurred and identify patterns or trends.
+Transparency: Logs provide a record of requests and server responses, which can explain issues reported by users.
+Security: Logs can detect unauthorized access attempts or other suspicious activities.
+
+Logging with Winston
+1. Request Logger
+The request logger records information about every incoming request, such as the HTTP method, endpoint, headers, and response status.
+Example log format:
+json
+Copy code
+{
+  "level": "info",
+  "message": "HTTP POST /signup",
+  "meta": {
+    "req": {
+      "headers": { /* request headers */ },
+      "httpVersion": "1.1",
+      "method": "POST",
+      "originalUrl": "/signup",
+      "url": "/signup"
+    },
+    "res": { "statusCode": 201 },
+    "responseTime": 75
+  }
+}
+
+Code Example:
+javascript
+Copy code
+const winston = require('winston');
+const expressWinston = require('express-winston');
+
+const messageFormat = winston.format.combine(
+  winston.format.timestamp(),
+  winston.format.printf(({ level, message, meta, timestamp }) =>
+    `${timestamp} ${level}: ${meta.error?.stack || message}`
+  )
+);
+
+const requestLogger = expressWinston.logger({
+  transports: [
+    new winston.transports.Console({ format: messageFormat }),
+    new winston.transports.File({ filename: 'request.log', format: winston.format.json() }),
+  ],
+});
+
+module.exports = { requestLogger };
+
+
+2. Error Logger
+The error logger records details about any errors that occur on the server, including the error name, message, and stack trace.
+Example log format for errors:
+json
+Copy code
+{
+  "level": "error",
+  "message": "ValidationError: Invalid email format",
+  "meta": {
+    "error": { "stack": "ValidationError: Invalid email format\n    at..." }
+  }
+}
+
+Code Example:
+javascript
+Copy code
+const errorLogger = expressWinston.errorLogger({
+  transports: [
+    new winston.transports.Console({ format: messageFormat }),
+    new winston.transports.File({ filename: 'error.log', format: winston.format.json() }),
+  ],
+});
+
+module.exports = { errorLogger };
+
+
+Integrating Loggers in Your Application
+Add the Request Logger: Place it before your routes in app.js:
+javascript
+Copy code
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+
+app.use(requestLogger); // Logs all incoming requests
+
+
+Add the Error Logger: Place it after the error-handling middleware:
+javascript
+Copy code
+app.use(errorLogger); // Logs errors that occur in the application
+
+
+
+Key Features of Winston
+Customizable Formats: Define how logs should appear using printf() and combine().
+Multiple Transports: Logs can be sent to multiple destinations (e.g., console, files).
+Built-in Safeguards: Sensitive information (e.g., passwords) is excluded by default.
+
+Benefits of Logging
+Efficient Debugging: Quickly trace the root cause of issues.
+User Satisfaction: Proactively resolve issues users encounter.
+Operational Insights: Understand server usage patterns and optimize performance.
+Security Monitoring: Detect unusual activity or potential breaches.
+
+Next Steps
+In the next lesson, you’ll implement request and error logging in your WTWR project,
+leveraging the features of Winston and Express-Winston. With proper logging,
+your application will be better equipped to handle errors and provide reliable service to its users. 🚀
