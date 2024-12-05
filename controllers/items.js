@@ -1,30 +1,19 @@
 const ClothingItem = require("../models/clothingItem");
+const { BAD_REQUEST, NOT_FOUND, FORBIDDEN } = require("../utils/errors");
 
-const {
-  BAD_REQUEST,
-  NOT_FOUND,
-  INTERNAL_SERVER_ERROR,
-  FORBIDDEN,
-} = require("../utils/errors");
-
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
-    .catch((err) => {
-      console.error(err);
-      res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
-    });
+    .catch(next);
 };
 
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
 
   if (!name || !weather || !imageUrl) {
-    return res.status(BAD_REQUEST).send({
-      message: "Missing required fields",
-    });
+    const error = new Error("Missing required fields");
+    error.statusCode = BAD_REQUEST;
+    return next(error);
   }
 
   const owner = req.user._id;
@@ -32,20 +21,17 @@ const createItem = (req, res) => {
   return ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send(item))
     .catch((err) => {
-      console.error(err);
       if (err.name === "ValidationError") {
-        res.status(BAD_REQUEST).send({
-          message: "Invalid item data",
-        });
+        const error = new Error("Invalid item data");
+        error.statusCode = BAD_REQUEST;
+        next(error);
       } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: "An error has occurred on the server" });
+        next(err);
       }
     });
 };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
@@ -63,23 +49,14 @@ const deleteItem = (req, res) => {
       return ClothingItem.findByIdAndRemove(itemId);
     })
     .then((item) => res.send(item))
-    .catch((err) => {
-      console.error(err);
-      if (err.statusCode === NOT_FOUND) {
-        res.status(NOT_FOUND).send({ message: err.message });
-      } else if (err.statusCode === FORBIDDEN) {
-        res.status(FORBIDDEN).send({ message: err.message });
-      } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: "An error has occurred on the server" });
-      }
-    });
+    .catch(next);
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
+  const { itemId } = req.params;
+
   ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
+    itemId,
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
@@ -89,21 +66,14 @@ const likeItem = (req, res) => {
       throw error;
     })
     .then((item) => res.send(item))
-    .catch((err) => {
-      console.error(err);
-      if (err.statusCode === NOT_FOUND) {
-        res.status(NOT_FOUND).send({ message: err.message });
-      } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: "An error has occurred on the server" });
-      }
-    });
+    .catch(next);
 };
 
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
+  const { itemId } = req.params;
+
   ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
+    itemId,
     { $pull: { likes: req.user._id } },
     { new: true }
   )
@@ -113,16 +83,7 @@ const dislikeItem = (req, res) => {
       throw error;
     })
     .then((item) => res.send(item))
-    .catch((err) => {
-      console.error(err);
-      if (err.statusCode === NOT_FOUND) {
-        res.status(NOT_FOUND).send({ message: err.message });
-      } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: "An error has occurred on the server" });
-      }
-    });
+    .catch(next);
 };
 
 module.exports = { getItems, createItem, deleteItem, likeItem, dislikeItem };
