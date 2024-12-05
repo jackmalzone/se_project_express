@@ -1,5 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
-const { BAD_REQUEST, NOT_FOUND, FORBIDDEN } = require("../utils/errors");
+const { BadRequestError, NotFoundError, ForbiddenError } = require("../errors");
 
 const getItems = (req, res, next) => {
   ClothingItem.find({})
@@ -11,9 +11,7 @@ const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
 
   if (!name || !weather || !imageUrl) {
-    const error = new Error("Missing required fields");
-    error.statusCode = BAD_REQUEST;
-    return next(error);
+    return next(new BadRequestError("Missing required fields"));
   }
 
   const owner = req.user._id;
@@ -22,12 +20,9 @@ const createItem = (req, res, next) => {
     .then((item) => res.status(201).send(item))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        const error = new Error("Invalid item data");
-        error.statusCode = BAD_REQUEST;
-        next(error);
-      } else {
-        next(err);
+        return next(new BadRequestError("Invalid item data"));
       }
+      next(err);
     });
 };
 
@@ -36,15 +31,13 @@ const deleteItem = (req, res, next) => {
 
   ClothingItem.findById(itemId)
     .orFail(() => {
-      const error = new Error("Item not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+      throw new NotFoundError("Item not found");
     })
     .then((item) => {
       if (item.owner.toString() !== req.user._id) {
-        const error = new Error("Forbidden");
-        error.statusCode = FORBIDDEN;
-        throw error;
+        throw new ForbiddenError(
+          "You don't have permission to delete this item"
+        );
       }
       return ClothingItem.findByIdAndRemove(itemId);
     })
@@ -61,9 +54,7 @@ const likeItem = (req, res, next) => {
     { new: true }
   )
     .orFail(() => {
-      const error = new Error("Item not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+      throw new NotFoundError("Item not found");
     })
     .then((item) => res.send(item))
     .catch(next);
@@ -78,9 +69,7 @@ const dislikeItem = (req, res, next) => {
     { new: true }
   )
     .orFail(() => {
-      const error = new Error("Item not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+      throw new NotFoundError("Item not found");
     })
     .then((item) => res.send(item))
     .catch(next);
