@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -7,13 +8,14 @@ const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const { PORT = 3001 } = process.env;
+const { MONGODB_URI = "mongodb://127.0.0.1:27017/wtwr_db" } = process.env;
 const app = express();
 
 app.use(cors());
 
 mongoose.set("strictQuery", false);
 mongoose
-  .connect("mongodb://127.0.0.1:27017/wtwr_db")
+  .connect(MONGODB_URI)
   .then(() => {
     console.log("Connected to MongoDB");
   })
