@@ -11,7 +11,14 @@ const { PORT = 3001 } = process.env;
 const { MONGODB_URI = "mongodb://127.0.0.1:27017/wtwr_db" } = process.env;
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: ["https://wtwrwtwr.twilightparadox.com", "http://localhost:3000"],
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 mongoose.set("strictQuery", false);
 mongoose
