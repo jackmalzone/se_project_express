@@ -17,9 +17,11 @@ const corsOptions = {
     "https://api.wtwrwtwr.twilightparadox.com",
     "http://localhost:3000",
   ],
-  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
   credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
