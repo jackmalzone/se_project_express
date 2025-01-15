@@ -2,6 +2,7 @@
 const mongoose = require("mongoose");
 const User = require("../models/user.js");
 const ClothingItem = require("../models/clothingItem.js");
+const { NotFoundError } = require("../errors/index.js");
 
 const items = [
   {
@@ -123,7 +124,9 @@ async function seedDatabase() {
     // First, create or find the user
     const user = await User.findOne({ email: "test@test.com" });
     if (!user) {
-      throw new Error("No user found - please run create-user script first");
+      throw new NotFoundError(
+        "No user found - please run create-user script first"
+      );
     }
 
     // Changed itemData to items to match the array name defined above
