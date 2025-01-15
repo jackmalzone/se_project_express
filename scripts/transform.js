@@ -8,7 +8,7 @@ const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
 // Extract the items array and transform
 const transformedItems = data.items.map((item) => ({
   name: item.name,
-  weather: item.weather,
+  weather: item.weather.toLowerCase(),
   imageUrl: item.imageUrl,
   owner: "6746856569f2d1a006ed001a",
   likes: [],
