@@ -1,5 +1,6 @@
 module.exports = {
   env: {
+    browser: true,
     es2021: true,
     node: true,
   },
@@ -24,5 +25,8 @@ module.exports = {
     "no-console": ["warn", { allow: ["warn", "error", "log"] }],
     "import/no-commonjs": "off",
     "no-unused-vars": ["error", { argsIgnorePattern: "next" }],
+    "import/extensions": ["error", "always", { ignorePackages: true }],
+    "consistent-return": "off",
+    "import/no-unresolved": "off",
   },
 };

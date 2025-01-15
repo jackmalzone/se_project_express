@@ -1,9 +1,9 @@
 const { isValidObjectId } = require("mongoose");
-const { BAD_REQUEST } = require("../utils/errors");
+const { BadRequestError } = require("../errors/index.js");
 
 module.exports = (req, res, next) => {
   if (!isValidObjectId(req.params.itemId)) {
-    return res.status(BAD_REQUEST).send({ message: "Invalid id" });
+    return next(new BadRequestError("Invalid id"));
   }
   return next();
 };

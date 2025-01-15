@@ -1,16 +1,16 @@
 const router = require("express").Router();
-const auth = require("../middlewares/auth");
+const auth = require("../middlewares/auth.js");
 const {
   getItems,
   createItem,
   deleteItem,
   likeItem,
   dislikeItem,
-} = require("../controllers/items");
+} = require("../controllers/items.js");
 const {
   validateId,
   validateClothingItem,
-} = require("../middlewares/validation");
+} = require("../middlewares/validation.js");
 
 router.get("/", getItems);
 router.post("/", auth, validateClothingItem, createItem);

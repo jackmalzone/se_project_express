@@ -1,7 +1,7 @@
-const fetch = require("node-fetch");
-const User = require("../models/user");
-const ClothingItem = require("../models/clothingItem");
+// const fetch = require("node-fetch");
 const mongoose = require("mongoose");
+const User = require("../models/user.js");
+const ClothingItem = require("../models/clothingItem.js");
 
 const items = [
   {

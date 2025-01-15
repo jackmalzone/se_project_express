@@ -2,12 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const mainRouter = require("./routes/index");
 const { errors } = require("celebrate");
-const errorHandler = require("./middlewares/error-handler");
-const { requestLogger, errorLogger } = require("./middlewares/logger");
-const limiter = require("./middlewares/rateLimiter");
 const helmet = require("helmet");
+const mainRouter = require("./routes/index.js");
+const errorHandler = require("./middlewares/error-handler.js");
+const { requestLogger, errorLogger } = require("./middlewares/logger.js");
+const limiter = require("./middlewares/rateLimiter.js");
 
 const { PORT = 3001 } = process.env;
 const { MONGODB_URI = "mongodb://127.0.0.1:27017/wtwr_db" } = process.env;
