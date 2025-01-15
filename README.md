@@ -45,6 +45,16 @@ To run the project, use the following commands:
 - Frontend: https://wtwrwtwr.twilightparadox.com
 - Backend: https://api.wtwrwtwr.twilightparadox.com
 
+### Environment Variables
+
+The project requires a `.env` file in the root directory with the following variables:
+
+- `JWT_SECRET` - Secret key for JWT token generation (different values for development and production)
+- `MONGODB_URI` - MongoDB connection string (defaults to "mongodb://127.0.0.1:27017/wtwr_db")
+- `PORT` - Server port number (defaults to 3001)
+
+Note: Never commit the `.env` file to version control. Make sure it's listed in your `.gitignore`.
+
 ## Additional Information
 
 - The server connects to a MongoDB instance running at `mongodb://127.0.0.1:27017/wtwr_db`.
