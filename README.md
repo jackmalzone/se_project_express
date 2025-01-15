@@ -40,9 +40,10 @@ To run the project, use the following commands:
 - `npm run start` — Launches the server on localhost:3001.
 - `npm run dev` — Launches the server with hot reload enabled for development.
 
-### Testing
+### Domain
 
-Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For example, 12.
+- Frontend: https://wtwrwtwr.twilightparadox.com
+- Backend: https://api.wtwrwtwr.twilightparadox.com
 
 ## Additional Information
 
