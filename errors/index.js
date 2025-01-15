@@ -1,37 +1,8 @@
-class BadRequestError extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 400;
-  }
-}
-
-class UnauthorizedError extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 401;
-  }
-}
-
-class ForbiddenError extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 403;
-  }
-}
-
-class NotFoundError extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 404;
-  }
-}
-
-class ConflictError extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 409;
-  }
-}
+const BadRequestError = require("./classes/BadRequestError");
+const UnauthorizedError = require("./classes/UnauthorizedError");
+const ForbiddenError = require("./classes/ForbiddenError");
+const NotFoundError = require("./classes/NotFoundError");
+const ConflictError = require("./classes/ConflictError");
 
 module.exports = {
   BadRequestError,

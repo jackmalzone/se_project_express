@@ -6,6 +6,8 @@ const mainRouter = require("./routes/index");
 const { errors } = require("celebrate");
 const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
+const limiter = require("./middlewares/rateLimiter");
+const helmet = require("helmet");
 
 const { PORT = 3001 } = process.env;
 const { MONGODB_URI = "mongodb://127.0.0.1:27017/wtwr_db" } = process.env;
@@ -22,6 +24,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
+
+app.use(helmet());
 
 mongoose.set("strictQuery", false);
 mongoose
@@ -40,6 +44,8 @@ app.get("/crash-test", () => {
     throw new Error("Server will crash now");
   }, 0);
 });
+
+app.use(limiter);
 
 app.use("/", mainRouter);
 
