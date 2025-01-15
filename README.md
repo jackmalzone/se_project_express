@@ -6,57 +6,151 @@ The WTWR (What to Wear?) back-end project is designed to provide a robust server
 
 The back-end server provides the following functionalities:
 
-- **User Management**:
+### User Management
 
-  - Create new users with a name and avatar.
-  - Retrieve a list of all users.
-  - Retrieve a specific user by their ID.
+- User Authentication:
 
-- **Clothing Item Management**:
+  - JWT-based authentication system
+  - Secure password hashing using bcrypt
+  - Protected routes requiring valid tokens
 
-  - Create new clothing items with details such as name, weather suitability, and image URL.
-  - Retrieve a list of all clothing items.
-  - Delete a clothing item by its ID.
-  - Like and unlike clothing items.
+- User Operations:
+  - Create new users with name, email, and avatar
+  - Login with email/password
+  - Update user profile information
+  - Retrieve current user data
 
-- **Error Handling**:
-  - Handles various error scenarios with appropriate HTTP status codes and messages.
-  - Validates request data to ensure data integrity.
+### Clothing Item Management
+
+- Create new clothing items with:
+  - Name
+  - Weather suitability
+  - Image URL
+  - Owner association
+- Retrieve all clothing items
+- Delete clothing items (owner only)
+- Like/unlike clothing items
+- Filter items by weather type
+
+### Security Features
+
+- Request Rate Limiting
+- CORS Protection
+- Helmet Security Headers
+- Input Validation using Celebrate
+- Environment-specific JWT Secrets
+- Secure Password Storage
+
+### Error Handling
+
+- Custom Error Classes:
+  - BadRequestError (400)
+  - UnauthorizedError (401)
+  - ForbiddenError (403)
+  - NotFoundError (404)
+  - ConflictError (409)
+- Centralized Error Handling
+- Request Validation
+- Detailed Error Messages (Development Only)
+
+### Logging
+
+- Request Logging using Winston
+- Error Logging
+- Development/Production Log Formats
+- Structured Log Output
 
 ## Technologies and Techniques Used
 
-- **Node.js**: A JavaScript runtime built on Chrome's V8 JavaScript engine, used for building the server-side application.
-- **Express.js**: A minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications.
-- **MongoDB**: A NoSQL database used to store user and clothing item data.
-- **Mongoose**: An ODM (Object Data Modeling) library for MongoDB and Node.js, used to manage data relationships and schema validation.
-- **Validator**: A library used to validate and sanitize strings, ensuring that URLs and other data are correctly formatted.
-- **ESLint and Prettier**: Tools used for maintaining code quality and formatting, ensuring a consistent codebase.
-- **GitHub Actions**: Used for continuous integration and testing, ensuring that the codebase remains stable and functional.
+- **Node.js & Express.js**: Server framework
+- **MongoDB & Mongoose**: Database and ODM
+- **Security**:
+  - JWT (jsonwebtoken)
+  - bcryptjs
+  - helmet
+  - express-rate-limit
+  - celebrate/joi
+- **Logging**:
+  - winston
+  - express-winston
+- **Development Tools**:
+  - ESLint (Airbnb style)
+  - Prettier
+  - nodemon
+- **Testing & CI**: GitHub Actions
 
-## Running the Project
+## API Endpoints
 
-To run the project, use the following commands:
+### Users
 
-- `npm run start` — Launches the server on localhost:3001.
-- `npm run dev` — Launches the server with hot reload enabled for development.
+- POST /signup - Register new user
+- POST /signin - User authentication
+- GET /users/me - Get current user
+- PATCH /users/me - Update user profile
 
-### Domain
+### Clothing Items
+
+- GET /items - Get all items
+- POST /items - Create new item
+- DELETE /items/:itemId - Delete item
+- PUT /items/:itemId/likes - Like item
+- DELETE /items/:itemId/likes - Unlike item
+
+## Project Setup
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Create environment files:
+   - `.env.dev` for development
+   - `.env.prod` for production
+4. Set up MongoDB
+5. Run the application
+
+### Environment Variables
+
+Required variables in `.env` files:
+
+- `JWT_SECRET` - Secret key for JWT tokens
+- `MONGODB_URI` - MongoDB connection string
+- `PORT` - Server port number
+
+### Running the Project
+
+- Production: `npm run start`
+- Development: `npm run dev`
+- Linting: `npm run lint`
+- Fix Linting: `npm run lint:fix`
+
+### Domain Configuration
 
 - Frontend: https://wtwrwtwr.twilightparadox.com
 - Backend: https://api.wtwrwtwr.twilightparadox.com
 
-### Environment Variables
+## Development Practices
 
-The project requires a `.env` file in the root directory with the following variables:
-
-- `JWT_SECRET` - Secret key for JWT token generation (different values for development and production)
-- `MONGODB_URI` - MongoDB connection string (defaults to "mongodb://127.0.0.1:27017/wtwr_db")
-- `PORT` - Server port number (defaults to 3001)
-
-Note: Never commit the `.env` file to version control. Make sure it's listed in your `.gitignore`.
+- ES6+ JavaScript features
+- Modular code organization
+- Comprehensive error handling
+- Security best practices
+- Code quality tools
+- Detailed logging
 
 ## Additional Information
 
-- The server connects to a MongoDB instance running at `mongodb://127.0.0.1:27017/wtwr_db`.
-- The project uses ES6 syntax where possible, leveraging modern JavaScript features for cleaner and more efficient code.
-- Error handling is implemented to ensure that the server responds with meaningful messages and status codes in case of failures.
+- MongoDB connection: `mongodb://127.0.0.1:27017/wtwr_db`
+- Secure environment configuration
+- Production-ready error handling
+- CORS configuration for frontend integration
+- Rate limiting for API protection
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+ISC License
