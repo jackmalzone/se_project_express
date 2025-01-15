@@ -10,7 +10,8 @@ node_modules
 .npm
 
 # Environment variables
-.env
+.env.dev
+.env.prod
 
 # System files and IDE settings folders
 .DS_Store
